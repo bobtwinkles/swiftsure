@@ -1,5 +1,6 @@
 #include "rendering.h"
 
+#include "log.h"
 #include "world.h"
 
 #include <curses.h>
@@ -28,6 +29,7 @@ int rendering_init(void) {
   keypad(stdscr, TRUE);
   getmaxyx(stdscr, screen_height, screen_width);
 
+  swiftsure_log(INFO, "We have %d color pairs availible.\n", COLOR_PAIRS);
   //initialize colors
   init_pair(TILE_AIR  , COLOR_BLACK, COLOR_BLACK);
   init_pair(TILE_SOLID, COLOR_WHITE, COLOR_WHITE);

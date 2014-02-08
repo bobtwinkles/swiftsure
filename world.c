@@ -37,7 +37,6 @@ void world_init(world_t * world) {
       px = x / (float)WORLD_SIZE;
       py = y / (float)WORLD_SIZE;
       platform  = normal(px - 0.5, 0, 0.2);
-      swiftsure_log(9, "%f\n", platform);
       if (platform > 1) {platform = 1;}
       platform += normal(py - 0.5, 0.1, 0.2) - 2.5;
       if (platform > 1) {platform = 1;}
