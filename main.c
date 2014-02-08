@@ -1,17 +1,27 @@
+#include <stdio.h>
+
 #include "rendering.h"
 #include "world.h"
+#include "log.h"
 
 world_t world;
 
 int main(int argc, const char ** argv) {
-    rendering_init();
+  if (swiftsure_log_init() < 0) {
+    printf("Bad times, we couldn't open our log file =(\n");
+    return -1;
+  }
 
-    world.width = screen_width / 2;
-    world.height = screen_height;
+  rendering_init();
 
-    world_init(&world);
+  world.width = WORLD_SIZE;
+  world.height = WORLD_SIZE;
 
-    while (1) {
-        render_world(&world);
-    }
+  world_init(&world);
+
+  swiftsure_log(0, "Startin engines\n");
+
+  while (1) {
+      render_world(&world, 2);
+  }
 }

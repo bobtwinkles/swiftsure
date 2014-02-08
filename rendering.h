@@ -8,6 +8,6 @@ struct world;
 
 void rendering_init();
 
-void render_world(struct world * world);
+void render_world(struct world * world, float scale);
 
 #endif
