@@ -1,6 +1,6 @@
 BLDDIR="./build"
 SRCDIR="./"
-CFLAGS="-Wall"
+CFLAGS=-Wall -g
 
 all : $(BLDDIR)
 	gcc -lm -lncurses $(CFLAGS) -o $(BLDDIR)/swiftsure $(SRCDIR)/*.c

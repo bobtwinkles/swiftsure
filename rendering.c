@@ -7,36 +7,64 @@
 int screen_width;
 int screen_height;
 
-static int frame;
+static float cam_x;
+static float cam_y;
+static float cam_scale;
 
-static const char * tile_chars = "  []";
-
-void rendering_init(void) {
+int rendering_init(void) {
   initscr();
+  if (!has_colors()) {
+    printf("We can't change color =(\n");
+    endwin();
+    return -1;
+  }
+  start_color();
   cbreak();
   noecho();
+  curs_set(0); //Hide cursor
 
   nonl();
   intrflush(stdscr, FALSE);
   keypad(stdscr, TRUE);
   getmaxyx(stdscr, screen_height, screen_width);
+
+  //initialize colors
+  init_pair(TILE_AIR  , COLOR_BLACK, COLOR_BLACK);
+  init_pair(TILE_SOLID, COLOR_WHITE, COLOR_WHITE);
+
+  return 0;
 }
 
-void render_world(world_t * world, float scale) {
+void render_world(world_t * world) {
   int x, y;
-  for (x = 0; x < world->width; ++x) {
-    for (y = 0; y < world->height; ++y) {
+  int cur_color = TILE_INVALID;
+  for (x = 0; x < screen_width; ++x) {
+    for (y = 0; y < screen_height; ++y) {
       int xx, yy;
-      xx = (int)(scale * (x + frame / 100));
-      yy = (int)(scale * (y + frame / 100));
+      xx = (int)(cam_scale * (x + cam_x)) + world->width / 2;
+      yy = (int)(cam_scale * (y + cam_y)) + world->height / 2;
       tile_t tile = world_get_tile(world, xx, yy);
 
-      if (tile != TILE_INVALID) {
-        mvaddch(y, x * 2 + 0, tile_chars[tile * 2 + 0]);
-        mvaddch(y, x * 2 + 1, tile_chars[tile * 2 + 1]);
+      if (cur_color != tile) {
+        if (cur_color != TILE_INVALID) {
+          attroff(COLOR_PAIR(cur_color));
+        }
+        cur_color = tile;
+        if (cur_color != TILE_INVALID) {
+          attron (COLOR_PAIR(cur_color));
+        }
+      }
+
+      if (tile != TILE_INVALID && tile != TILE_AIR) {
+        mvaddstr(y, x * 2, "  ");
       }
     }
   }
-//  frame += 1;
   refresh();
+}
+
+void render_set_camera(float x, float y, float scale) {
+  cam_x = x;
+  cam_y = y;
+  cam_scale = scale;
 }

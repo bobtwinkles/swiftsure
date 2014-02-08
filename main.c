@@ -6,6 +6,8 @@
 
 world_t world;
 
+static int frame;
+
 int main(int argc, const char ** argv) {
   if (swiftsure_log_init() < 0) {
     printf("Bad times, we couldn't open our log file =(\n");
@@ -21,7 +23,10 @@ int main(int argc, const char ** argv) {
 
   swiftsure_log(0, "Startin engines\n");
 
+  render_set_camera(-screen_width / 4, -screen_height / 2, 2);
+
   while (1) {
-      render_world(&world, 2);
+    render_world(&world);
+    ++frame;
   }
 }

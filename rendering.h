@@ -6,8 +6,10 @@ extern int screen_height;
 
 struct world;
 
-void rendering_init();
+extern int rendering_init();
 
-void render_world(struct world * world, float scale);
+extern void render_world(struct world * world);
+
+extern void render_set_camera(float x, float y, float scale);
 
 #endif
