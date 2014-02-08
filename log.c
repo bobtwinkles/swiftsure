@@ -17,7 +17,7 @@ int swiftsure_log_init(void) {
   log_start = 0;
   log_length = 0;
   log_abs_position = 0;
-  swiftsure_log(INFO, "Max log line lenght is %d characters\n", MAX_LOG_LINE_LENGTH);
+  swiftsure_log(INFO, "Max log line length is %d characters\n", MAX_LOG_LINE_LENGTH);
   return 0;
 }
 
