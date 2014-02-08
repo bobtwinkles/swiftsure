@@ -50,9 +50,6 @@ int main(int argc, const char ** argv) {
       world_destroy(&world);
       world_init(&world, frame);
     }
-    if (random() % 100 == 0) {
-      swiftsure_log(CRIT, "I AM BEST POTATO\n");
-    }
 
     //Rate limiting
     gettimeofday(&end_time, NULL);

@@ -8,7 +8,7 @@
 #define WARN  1
 #define CRIT  0
 
-#define MAX_LOG_LINE_LENGTH 40
+#define MAX_LOG_LINE_LENGTH 128
 typedef struct log_data {
   int level;
   int abs_index;

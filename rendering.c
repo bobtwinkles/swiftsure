@@ -65,7 +65,7 @@ void render_world(world_t * world) {
         cur_color = COLORS_LOG + data->level;
         attron(COLOR_PAIR(cur_color));
       }
-      snprintf(buffer, MAX_LOG_LINE_LENGTH, "%4d:%s", data->abs_index, data->msg);
+      snprintf(buffer, MAX_LOG_LINE_LENGTH + 5, "%4d:%s", data->abs_index, data->msg);
       mvaddstr(i, 0, buffer);
     }
     attroff(cur_color);
