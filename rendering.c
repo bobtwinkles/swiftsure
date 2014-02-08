@@ -55,7 +55,7 @@ void render_world(world_t * world) {
         }
       }
 
-      if (tile != TILE_INVALID && tile != TILE_AIR) {
+      if (tile != TILE_INVALID) {
         mvaddstr(y, x * 2, "  ");
       }
     }
