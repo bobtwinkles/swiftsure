@@ -1,0 +1,4 @@
+# build files
+build
+# vim temp files
+.*.swp
