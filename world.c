@@ -21,7 +21,7 @@ float normal(float x, float mu, float sigma) {
   return coeficient * pow(E, power);
 }
 
-void world_init(world_t * world) {
+void world_init(world_t * world, int seed) {
   int i;
   world->tiles = malloc(sizeof(tile_t) * world->width * world->height);
 
@@ -32,7 +32,7 @@ void world_init(world_t * world) {
       world->tiles[i] = TILE_AIR;
     } else {
       float noise, platform, px, py;
-      noise = sdnoise2(x / SCALE1, y / SCALE1, NULL, NULL);
+      noise = sdnoise2((x + seed) / SCALE1, (y + seed) / SCALE1, NULL, NULL);
 
       px = x / (float)WORLD_SIZE;
       py = y / (float)WORLD_SIZE;
@@ -46,7 +46,7 @@ void world_init(world_t * world) {
 }
 
 void world_destroy(world_t * world) {
-    free(world->tiles);
+  free(world->tiles);
 }
 
 

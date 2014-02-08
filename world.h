@@ -16,7 +16,7 @@ typedef struct world {
     tile_t * tiles;
 } world_t;
 
-void world_init(world_t * world);
+void world_init(world_t * world, int seed);
 void world_destroy(world_t * world);
 
 tile_t world_get_tile(world_t * world, int x, int y);
