@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include "input.h"
 #include "rendering.h"
 #include "world.h"
 #include "log.h"
@@ -42,6 +43,7 @@ int main(int argc, const char ** argv) {
 
     render_set_camera(-screen_width / 4, -screen_height / 2, 2);
 
+    handle_events();
     render_world(&world);
     ++frame;
 
