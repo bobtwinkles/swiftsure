@@ -49,10 +49,14 @@ int rendering_init(const char * argv, int argc) {
     return -1;
   }
 
+  SDL_GetWindowSize(window, &screen_width, &screen_height);
+
   context = SDL_GL_CreateContext(window);
   if (check_sdl_error(__FILE__, __LINE__) < 0) {
     return -1;
   }
+  //vSync
+  SDL_GL_SetSwapInterval(1);
   //GLEW init
   if (glewInit() != GLEW_OK) {
     swiftsure_log(CRIT, "Couldn't initialize GLEW =(");
@@ -64,7 +68,42 @@ int rendering_init(const char * argv, int argc) {
 }
 
 void render_world(struct world * world) {
+  int x, y;
+  float xx, yy;
   glClear(GL_COLOR_BUFFER_BIT);
+
+  glLoadIdentity();
+  glBegin(GL_LINE_STRIP);
+  glColor3f(1., 0, 0);
+  glVertex2f(0, 1);
+  glVertex2f(0, 0);
+  glColor3f(0, 1., 0);
+  glVertex2f(0, 0);
+  glVertex2f(1, 0);
+  glEnd();
+  glScalef(cam_scale / screen_width, cam_scale / screen_height, 1);
+  glTranslatef(cam_x * cam_scale, cam_y * cam_scale, 0);
+
+  glBegin(GL_QUADS);
+
+  const float offset = cam_scale;
+
+  glColor3f(1, 1, 1);
+  for (x = 0; x < world->width; ++x) {
+    for (y = 0; y < world->height; ++y) {
+      if (world_get_tile(world, x, y) == TILE_SOLID) {
+        xx = (float)x * cam_scale;
+        yy = (float)y * cam_scale;
+        glVertex2f(xx, yy);
+        glVertex2f(xx, yy + offset);
+        glVertex2f(xx + offset, yy + offset);
+        glVertex2f(xx + offset, yy);
+      }
+    }
+  }
+
+  glEnd();
+
   SDL_GL_SwapWindow(window);
 }
 
