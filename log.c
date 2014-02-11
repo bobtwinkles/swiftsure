@@ -30,10 +30,12 @@ void swiftsure_log(int level, const char * fmt, ...) {
 
   //Print to internal log buffer
   vsnprintf((char*)&the_log[log_start].msg, MAX_LOG_LINE_LENGTH, fmt, args);
-  //And to the log file
-  fprintf(log_file, "%s", the_log[log_start].msg);
   the_log[log_start].level = level;
   the_log[log_start].abs_index = log_abs_position++;
+  //And to the log file
+  fprintf(log_file, "%s", the_log[log_start].msg);
+  //And to standard out because why not
+  printf("%05d:%s", the_log[log_start].abs_index, the_log[log_start].msg);
 
   va_end(args);
 
