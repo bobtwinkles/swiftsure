@@ -1,5 +1,6 @@
 #include "rendering.h"
 
+#include "entity.h"
 #include "log.h"
 #include "world.h"
 
@@ -19,6 +20,15 @@ static SDL_GLContext context;
 static void sdl_die(const char * message) {
   swiftsure_log(CRIT, "%s: %s\n", message, SDL_GetError());
   SDL_Quit();
+}
+
+static int check_gl_error(const char * file, int line) {
+  GLenum error = glGetError();
+  if (error != GL_NO_ERROR) {
+    swiftsure_log(CRIT, "%s:%d%s\n", file, line, error);
+    return -1;
+  }
+  return 0;
 }
 
 static int check_sdl_error(const char * file, int line) {
@@ -70,23 +80,7 @@ int rendering_init(const char * argv, int argc) {
 void render_world(struct world * world) {
   int x, y;
   float xx, yy;
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glLoadIdentity();
-  glBegin(GL_LINE_STRIP);
-  glColor3f(1., 0, 0);
-  glVertex2f(0, 1);
-  glVertex2f(0, 0);
-  glColor3f(0, 1., 0);
-  glVertex2f(0, 0);
-  glVertex2f(1, 0);
-  glEnd();
-  glScalef(cam_scale / screen_width, cam_scale / screen_height, 1);
-  glTranslatef(cam_x * cam_scale, cam_y * cam_scale, 0);
-
   glBegin(GL_QUADS);
-
-  const float offset = cam_scale;
 
   glColor3f(1, 1, 1);
   for (x = 0; x < world->width; ++x) {
@@ -95,16 +89,56 @@ void render_world(struct world * world) {
         xx = (float)x * cam_scale;
         yy = (float)y * cam_scale;
         glVertex2f(xx, yy);
-        glVertex2f(xx, yy + offset);
-        glVertex2f(xx + offset, yy + offset);
-        glVertex2f(xx + offset, yy);
+        glVertex2f(xx, yy + cam_scale);
+        glVertex2f(xx + cam_scale, yy + cam_scale);
+        glVertex2f(xx + cam_scale, yy);
       }
     }
   }
 
   glEnd();
+}
 
+void render_start_frame() {
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  glLoadIdentity();
+  glScalef(cam_scale / screen_width, cam_scale / screen_height, 1);
+
+  glBegin(GL_LINE_STRIP);
+  glColor3f(1., 0, 0);
+  glVertex2f(0, 16);
+  glVertex2f(0, 0);
+  glColor3f(0, 1., 0);
+  glVertex2f(0, 0);
+  glVertex2f(16, 0);
+  glEnd();
+
+  glTranslatef(cam_x * cam_scale, cam_y * cam_scale, 0);
+  check_gl_error(__FILE__, __LINE__);
+}
+
+void render_end_frame() {
   SDL_GL_SwapWindow(window);
+}
+
+void render_entity(struct entity * ent) {
+  float xx, yy, ww, hh;
+
+  xx = ent->x * cam_scale;
+  yy = ent->y * cam_scale;
+  ww = ent->w * cam_scale;
+  hh = ent->h * cam_scale;
+
+  glBegin(GL_QUADS);
+    glColor3f(1.f, 0.f, 0.f);
+    glVertex2f(xx, yy);
+    glVertex2f(xx, yy + hh);
+    glVertex2f(xx + ww, yy + hh);
+    glVertex2f(xx + ww, yy);
+  glEnd();
+
+  check_gl_error(__FILE__, __LINE__);
 }
 
 void render_set_camera(float x, float y, float scale) {

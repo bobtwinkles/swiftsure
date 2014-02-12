@@ -8,6 +8,7 @@
 #include "rendering.h"
 #include "world.h"
 #include "log.h"
+#include "entity.h"
 
 world_t world;
 
@@ -19,6 +20,7 @@ int main(int argc, const char ** argv) {
   struct timespec left = {0, 0};
   int error;
   long long elapsed;
+  entity_t player;
 
   if (swiftsure_log_init() < 0) {
     printf("Bad times, we couldn't open our log file =(\n");
@@ -32,26 +34,26 @@ int main(int argc, const char ** argv) {
 
   world_init(&world, 1);
 
-  swiftsure_log(INFO, "Startin engines\n");
+  player.x = 100;
+  player.y = 100;
+  player.w = 1;
+  player.h = 2;
 
-  render_set_camera(-screen_width / 4, -screen_height / 2, 2);
+  swiftsure_log(INFO, "Startin engines\n");
 
   frame = 0;
 
   while (1) {
     gettimeofday(&start_time, NULL);
 
-    render_set_camera(-screen_width / 4, -screen_height / 2, 2);
+    render_set_camera(-(player.x + player.w / 2.), -(player.y + player.h / 2.), 4);
 
     handle_events();
+    render_start_frame();
     render_world(&world);
+    render_entity(&player);
+    render_end_frame();
     ++frame;
-
-    if (frame % 20 == 1) {
-      swiftsure_log(DEBUG, "regen stage\n");
-      world_destroy(&world);
-      world_init(&world, frame);
-    }
 
     //Rate limiting
     gettimeofday(&end_time, NULL);
