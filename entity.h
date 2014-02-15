@@ -2,8 +2,8 @@
 #define _ENTITY_H_
 
 typedef struct entity {
-  int x, y;
-  int w, h;
+  float x, y;
+  float w, h;
 } entity_t;
 
 #endif

@@ -9,10 +9,10 @@
 #include "world.h"
 #include "log.h"
 #include "entity.h"
+#include "physics.h"
+#include "globals.h"
 
 world_t world;
-
-static int frame;
 
 int main(int argc, const char ** argv) {
   struct timeval start_time, end_time;
@@ -21,6 +21,7 @@ int main(int argc, const char ** argv) {
   int error;
   long long elapsed;
   entity_t player;
+  phys_object_t * player_phys;
 
   if (swiftsure_log_init() < 0) {
     printf("Bad times, we couldn't open our log file =(\n");
@@ -36,12 +37,16 @@ int main(int argc, const char ** argv) {
 
   player.x = 100;
   player.y = 100;
-  player.w = 1;
-  player.h = 2;
+  player.w = 1.99;
+  player.h = 3.99;
+
+  player_phys = physics_add_entity(&player);
+  input_set_player(0, player_phys);
 
   swiftsure_log(INFO, "Startin engines\n");
 
   frame = 0;
+  elapsed = 16666;
 
   while (1) {
     gettimeofday(&start_time, NULL);
@@ -54,6 +59,8 @@ int main(int argc, const char ** argv) {
     render_entity(&player);
     render_end_frame();
     ++frame;
+
+    physics_tick(&world, 10. / elapsed);
 
     //Rate limiting
     gettimeofday(&end_time, NULL);

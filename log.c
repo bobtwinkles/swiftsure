@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "globals.h"
+
 #define MAX_LOG_SIZE 32
 
 static int log_level = 9;
@@ -33,9 +35,9 @@ void swiftsure_log(int level, const char * fmt, ...) {
   the_log[log_start].level = level;
   the_log[log_start].abs_index = log_abs_position++;
   //And to the log file
-  fprintf(log_file, "%s", the_log[log_start].msg);
+  fprintf(log_file, "%03d:%05d:%s", frame, the_log[log_start].abs_index, the_log[log_start].msg);
   //And to standard out because why not
-  printf("%05d:%s", the_log[log_start].abs_index, the_log[log_start].msg);
+  printf("%03d:%05d:%s", frame, the_log[log_start].abs_index, the_log[log_start].msg);
 
   va_end(args);
 
