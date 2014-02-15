@@ -8,6 +8,8 @@ typedef struct phys_object {
   struct phys_object * next, * prev;
   struct entity * ent;
   float dx, dy;
+  int last_y_hit_frame;
+  int last_x_hit_frame;
   char y_hit;
   char x_hit;
 } phys_object_t;

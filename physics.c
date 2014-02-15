@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "linkedlist.h"
 #include "log.h"
+#include "globals.h"
 #include "world.h"
 
 #include <stdlib.h>
@@ -68,12 +69,16 @@ void physics_tick(struct world * world, double delta) {
     for (x = xmin; x <= xmax; ++x) {
       if (world_get_tile(world, x, ymin) == TILE_SOLID) {
         curr->y_hit = 1;
+        curr->last_y_hit_frame = frame;
+        ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin + 1 + SMOOTHING_OFFSET;
         swiftsure_log(DEBUG, "Bottom hit\n");
       }
       if (world_get_tile(world, x, ymax) == TILE_SOLID) {
         curr->y_hit = 1;
+        curr->last_y_hit_frame = frame;
+        ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin - SMOOTHING_OFFSET;
         swiftsure_log(DEBUG, "Top hit\n");
@@ -86,12 +91,14 @@ void physics_tick(struct world * world, double delta) {
     for (y = ymin; y <= ymax; ++y) {
       if (world_get_tile(world, xmin, y) == TILE_SOLID) {
         curr->x_hit = 1;
+        curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin + 1 + SMOOTHING_OFFSET;
         swiftsure_log(DEBUG, "Left hit\n");
       }
       if (world_get_tile(world, xmax, y) == TILE_SOLID) {
         curr->x_hit = 1;
+        curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin - SMOOTHING_OFFSET;
         swiftsure_log(DEBUG, "Right hit\n");

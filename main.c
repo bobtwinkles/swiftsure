@@ -39,6 +39,8 @@ int main(int argc, const char ** argv) {
   player.y = 100;
   player.w = 1.99;
   player.h = 3.99;
+  player.air_jumps_max = 2;
+  player.air_jumps_used = 0;
 
   player_phys = physics_add_entity(&player);
   input_set_player(0, player_phys);

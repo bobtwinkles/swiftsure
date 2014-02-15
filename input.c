@@ -6,6 +6,7 @@
 #include "log.h"
 #include "physics.h"
 #include "entity.h"
+#include "globals.h"
 
 static phys_object_t *players[MAX_PLAYER];
 
@@ -25,13 +26,14 @@ void handle_events(void) {
           case SDLK_a: players[0]->dx = -32; break;
           case SDLK_d: players[0]->dx = 32; break;
           case SDLK_w: 
-            if (players[0]->y_hit) {
-              players[0]->dy = 99;
+            if (frame - 5 <= players[0]->last_y_hit_frame) {
+              players[0]->dy = 32;
               players[0]->ent->y += 1;
               swiftsure_log(DEBUG, "jumpin\n");
-            } else {
-              players[0]->dy = 99;
+            } else if (players[0]->ent->air_jumps_used < players[0]->ent->air_jumps_max) {
+              players[0]->dy = 32;
               players[0]->ent->y += 0.1;
+              players[0]->ent->air_jumps_used += 1;
               swiftsure_log(DEBUG, "jumpin2\n");
             }
             break;
