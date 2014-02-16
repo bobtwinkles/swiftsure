@@ -96,10 +96,13 @@ void physics_tick(struct world * world, double delta) {
           if (temp.y > other_rect.y) {
             curr->y_hit = HIT_BOTTOM;
             curr->last_y_hit_frame = frame;
+            ent->rect.y = other_rect.y + other_rect.h + SMOOTHING_OFFSET;
           } else {
             curr->y_hit = HIT_TOP;
             curr->last_y_hit_frame = frame;
+            ent->rect.y = other_rect.y - ent->rect.h - SMOOTHING_OFFSET;
           }
+          collider->dy = curr->dy / 2;
           dy = 0;
         }
         collider = collider->next;
@@ -140,10 +143,13 @@ void physics_tick(struct world * world, double delta) {
           if (temp.x > other_rect.x) {
             curr->x_hit = HIT_RIGHT;
             curr->last_x_hit_frame = frame;
+            ent->rect.x = other_rect.x + other_rect.w + SMOOTHING_OFFSET;
           } else {
             curr->x_hit = HIT_LEFT;
             curr->last_x_hit_frame = frame;
+            ent->rect.x = other_rect.x - ent->rect.w - SMOOTHING_OFFSET;
           }
+          collider->dx = curr->dx / 2;
           dx = 0;
         }
         collider = collider->next;
