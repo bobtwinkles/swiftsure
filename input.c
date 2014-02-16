@@ -27,7 +27,7 @@ typedef struct joystick_status {
 
 static phys_object_t *players[MAX_PLAYERS];
 static joystick_status_t joysticks[MAX_PLAYERS];
-static Uint8 * keyboard_state;
+static const Uint8 * keyboard_state;
 static char p1_should_kbd;
 
 static int translate_button(int joybutton);
@@ -85,6 +85,10 @@ void handle_events(void) {
       case SDL_KEYDOWN:
         switch(event.key.keysym.sym) {
           case SDLK_ESCAPE: exit(0); break;
+          case SDLK_w:
+            if (p1_should_kbd) {
+              jump_player(0);
+            }
         }
         break;
       case SDL_JOYAXISMOTION:
@@ -111,9 +115,6 @@ void handle_events(void) {
   }
   //DI
   if (p1_should_kbd) {
-    if (keyboard_state[SDL_SCANCODE_W]) {
-      jump_player(0);
-    }
     if (keyboard_state[SDL_SCANCODE_A]) {
       di_player(0, DI_LEFT);
     }
