@@ -117,6 +117,7 @@ void physics_tick(struct world * world, double delta) {
 phys_object_t * physics_add_entity(entity_t * ent) {
   phys_object_t * new;
   new = malloc(sizeof(phys_object_t));
+  memset(new, 0, sizeof(phys_object_t));
   new->ent = ent;
 
   linkedlist_insert_after((ll_node_t*)&root.next, (ll_node_t*)new);
