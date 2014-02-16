@@ -74,6 +74,7 @@ int rendering_init(const char * argv, int argc) {
   }
   //Set up OGL state that never chagnes
   glClearColor(0.f, 0.f, 0.f, 0.f);
+  glPointSize(5.f);
   return 0;
 }
 
@@ -125,10 +126,10 @@ void render_end_frame() {
 void render_entity(struct entity * ent) {
   float xx, yy, ww, hh;
 
-  xx = ent->x * cam_scale;
-  yy = ent->y * cam_scale;
-  ww = ent->w * cam_scale;
-  hh = ent->h * cam_scale;
+  xx = ent->rect.x * cam_scale;
+  yy = ent->rect.y * cam_scale;
+  ww = ent->rect.w * cam_scale;
+  hh = ent->rect.h * cam_scale;
 
   glBegin(GL_QUADS);
     glColor3f(ent->r, ent->g, ent->b);

@@ -4,6 +4,7 @@
 #include "linkedlist.h"
 #include "log.h"
 #include "gamedefs.h"
+#include "geometry.h"
 #include "world.h"
 
 #include <stdlib.h>
@@ -39,7 +40,8 @@ int check_collisions(world_t * world, int xmin, int xmax, int ymin, int ymax) {
 #define FRICTION 0.5
 
 void physics_tick(struct world * world, double delta) {
-  phys_object_t * curr;
+  phys_object_t * curr, * collider;
+  rectangle_t temp, cresult, other_rect;
   entity_t * ent;
   int xmin,ymin,xmax,ymax;
   int x, y;
@@ -56,47 +58,101 @@ void physics_tick(struct world * world, double delta) {
     //Move as far as possible
     dx = curr->dx * delta;
     dy = curr->dy * delta;
-    xmin = (int)(ent->x + SMOOTHING_OFFSET);
-    xmax = (int)(ent->x + ent->w - SMOOTHING_OFFSET);
-    ymin = (int)(ent->y + dy + SMOOTHING_OFFSET);
-    ymax = (int)(ent->y + ent->h + dy - SMOOTHING_OFFSET);
+    temp.w = ent->rect.w;
+    temp.h = ent->rect.h;
+    //
+    // Test y motion
+    //
+    xmin = (int)(ent->rect.x + SMOOTHING_OFFSET);
+    xmax = (int)(ent->rect.x + ent->rect.w - SMOOTHING_OFFSET);
+    ymin = (int)(ent->rect.y + dy + SMOOTHING_OFFSET);
+    ymax = (int)(ent->rect.y + ent->rect.h + dy - SMOOTHING_OFFSET);
     for (x = xmin; x <= xmax; ++x) {
       if (world_get_tile(world, x, ymin) == TILE_SOLID) {
         curr->y_hit = HIT_BOTTOM;
         curr->last_y_hit_frame = frame;
         ent->air_jumps_used = 0;
         dy = 0;
-        ent->y = ymin + 1 + SMOOTHING_OFFSET;
+        ent->rect.y = ymin + 1 + SMOOTHING_OFFSET;
       }
       if (world_get_tile(world, x, ymax) == TILE_SOLID) {
         curr->y_hit = HIT_TOP;
         curr->last_y_hit_frame = frame;
         dy = 0;
-        ent->y = ymin - SMOOTHING_OFFSET;
+        ent->rect.y = ymin - SMOOTHING_OFFSET;
+      }
+      collider = root.next;
+      temp.x = ent->rect.x;
+      temp.y = ent->rect.y + dy;
+      while (collider) {
+        //skip self
+        if (collider == curr) {
+          collider = collider->next;
+          continue;
+        }
+        other_rect = collider->ent->rect;
+        rectangle_intersect(&temp, &other_rect, &cresult);
+        if (cresult.h > 0 && cresult.w > 0) {
+          if (temp.y > other_rect.y) {
+            curr->y_hit = HIT_BOTTOM;
+            curr->last_y_hit_frame = frame;
+          } else {
+            curr->y_hit = HIT_TOP;
+            curr->last_y_hit_frame = frame;
+          }
+          dy = 0;
+        }
+        collider = collider->next;
       }
     }
-    xmin = (int)(ent->x + dx + SMOOTHING_OFFSET);
-    xmax = (int)(ent->x + ent->w + dx - SMOOTHING_OFFSET);
-    ymin = (int)(ent->y + SMOOTHING_OFFSET);
-    ymax = (int)(ent->y + ent->h - SMOOTHING_OFFSET);
+    //
+    // Test X motion
+    //
+    xmin = (int)(ent->rect.x + dx + SMOOTHING_OFFSET);
+    xmax = (int)(ent->rect.x + ent->rect.w + dx - SMOOTHING_OFFSET);
+    ymin = (int)(ent->rect.y + SMOOTHING_OFFSET);
+    ymax = (int)(ent->rect.y + ent->rect.h - SMOOTHING_OFFSET);
     for (y = ymin; y <= ymax; ++y) {
       if (world_get_tile(world, xmin, y) == TILE_SOLID) {
         curr->x_hit = HIT_LEFT;
         curr->last_x_hit_frame = frame;
         dx = 0;
-        ent->x = xmin + 1 + SMOOTHING_OFFSET;
+        ent->rect.x = xmin + 1 + SMOOTHING_OFFSET;
       }
       if (world_get_tile(world, xmax, y) == TILE_SOLID) {
         curr->x_hit = HIT_RIGHT;
         curr->last_x_hit_frame = frame;
         dx = 0;
-        ent->x = xmin - SMOOTHING_OFFSET;
+        ent->rect.x = xmin - SMOOTHING_OFFSET;
+      }
+      collider = root.next;
+      temp.x = ent->rect.x + dx;
+      temp.y = ent->rect.y;
+      while (collider) {
+        //skip self
+        if (collider == curr) {
+          collider = collider->next;
+          continue;
+        }
+        other_rect = collider->ent->rect;
+        rectangle_intersect(&temp, &other_rect, &cresult);
+        if (cresult.h > 0 && cresult.w > 0) {
+          if (temp.x > other_rect.x) {
+            curr->x_hit = HIT_RIGHT;
+            curr->last_x_hit_frame = frame;
+          } else {
+            curr->x_hit = HIT_LEFT;
+            curr->last_x_hit_frame = frame;
+          }
+          dx = 0;
+        }
+        collider = collider->next;
       }
     }
     if (curr->y_hit) { curr->dy = 0; }
     if (curr->x_hit) { curr->dx = 0; }
-    ent->x += dx;
-    ent->y += dy;
+    ent->rect.x += dx;
+    ent->rect.y += dy;
 
     if (curr->y_hit) {
       curr->dx *= FRICTION;

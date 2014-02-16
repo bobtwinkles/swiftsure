@@ -14,18 +14,23 @@ phys_object_t *objects[MAX_PLAYERS];
 
 void game_init(void) {
   int i;
+  float offset, curr;
+  offset = (float)WORLD_SIZE / MAX_PLAYERS;
+  curr = offset / 2;
   for (i = 0; i < MAX_PLAYERS; ++i) {
-    players[i].x = rand() % WORLD_SIZE;
-    players[i].y = 100;
-    players[i].w = 1.99;
-    players[i].h = 2.99;
-    players[i].r = rand() / (float)RAND_MAX;
-    players[i].g = rand() / (float)RAND_MAX;
-    players[i].b = rand() / (float)RAND_MAX;
+    players[i].rect.x = curr;
+    players[i].rect.y = 100;
+    players[i].rect.w = 2;
+    players[i].rect.h = 3;
+    players[i].r = i / (float)MAX_PLAYERS;
+    players[i].g = 0.5f + 0.5f * (i / (float) MAX_PLAYERS);
+    players[i].b = 1.f - (i / (float)MAX_PLAYERS);
     players[i].air_jumps_max = 2;
     players[i].air_jumps_used = 0;
     objects[i] = physics_add_entity(&players[i]);
     input_set_player(i, objects[i]);
+
+    curr += offset;
   }
 }
 
@@ -35,8 +40,8 @@ void game_get_avg_pos(float * x, float * y) {
   x_out = 0;
   y_out = 0;
   for (i = 0; i < MAX_PLAYERS; ++i) {
-    x_out += players[i].x + players[i].w / 2;
-    y_out += players[i].y + players[i].h / 2;
+    x_out += players[i].rect.x + players[i].rect.w / 2;
+    y_out += players[i].rect.y + players[i].rect.h / 2;
   }
   x_out /= MAX_PLAYERS;
   y_out /= MAX_PLAYERS;
