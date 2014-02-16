@@ -73,7 +73,6 @@ void physics_tick(struct world * world, double delta) {
         ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin + 1 + SMOOTHING_OFFSET;
-        swiftsure_log(DEBUG, "Bottom hit\n");
       }
       if (world_get_tile(world, x, ymax) == TILE_SOLID) {
         curr->y_hit = 1;
@@ -81,7 +80,6 @@ void physics_tick(struct world * world, double delta) {
         ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin - SMOOTHING_OFFSET;
-        swiftsure_log(DEBUG, "Top hit\n");
       }
     }
     xmin = (int)(ent->x + dx + SMOOTHING_OFFSET);
@@ -94,14 +92,12 @@ void physics_tick(struct world * world, double delta) {
         curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin + 1 + SMOOTHING_OFFSET;
-        swiftsure_log(DEBUG, "Left hit\n");
       }
       if (world_get_tile(world, xmax, y) == TILE_SOLID) {
         curr->x_hit = 1;
         curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin - SMOOTHING_OFFSET;
-        swiftsure_log(DEBUG, "Right hit\n");
       }
     }
     if (curr->y_hit) {

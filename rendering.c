@@ -42,7 +42,7 @@ static int check_sdl_error(const char * file, int line) {
 
 int rendering_init(const char * argv, int argc) {
   //SDL init
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     sdl_die("Couldn't initialize SDL");
     return -1;
   }

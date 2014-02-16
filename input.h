@@ -5,8 +5,10 @@
 
 struct phys_object;
 
-void input_set_player(int idx, struct phys_object * object);
+extern int input_init(void);
 
-void handle_events(void);
+extern void input_set_player(int idx, struct phys_object * object);
+
+extern void handle_events(void);
 
 #endif

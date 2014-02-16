@@ -30,6 +30,11 @@ int main(int argc, const char ** argv) {
 
   rendering_init();
 
+  if (input_init() < 0) {
+    printf("Bad times, we couldn't initialize the input subsystem\n");
+    return -1;
+  }
+
   world.width = WORLD_SIZE;
   world.height = WORLD_SIZE;
 
