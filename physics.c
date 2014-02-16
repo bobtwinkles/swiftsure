@@ -40,7 +40,7 @@ static float sign(float x) {
 }
 
 #define SMOOTHING_OFFSET 0.01
-#define AIR_RESISTANCE 0.95
+#define AIR_RESISTANCE 0.99
 #define FRICTION 0.5
 
 void physics_tick(struct world * world, double delta) {
@@ -68,16 +68,15 @@ void physics_tick(struct world * world, double delta) {
     ymax = (int)(ent->y + ent->h + dy - SMOOTHING_OFFSET);
     for (x = xmin; x <= xmax; ++x) {
       if (world_get_tile(world, x, ymin) == TILE_SOLID) {
-        curr->y_hit = 1;
+        curr->y_hit = HIT_BOTTOM;
         curr->last_y_hit_frame = frame;
         ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin + 1 + SMOOTHING_OFFSET;
       }
       if (world_get_tile(world, x, ymax) == TILE_SOLID) {
-        curr->y_hit = 1;
+        curr->y_hit = HIT_TOP;
         curr->last_y_hit_frame = frame;
-        ent->air_jumps_used = 0;
         dy = 0;
         ent->y = ymin - SMOOTHING_OFFSET;
       }
@@ -88,32 +87,28 @@ void physics_tick(struct world * world, double delta) {
     ymax = (int)(ent->y + ent->h - SMOOTHING_OFFSET);
     for (y = ymin; y <= ymax; ++y) {
       if (world_get_tile(world, xmin, y) == TILE_SOLID) {
-        curr->x_hit = 1;
+        curr->x_hit = HIT_LEFT;
         curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin + 1 + SMOOTHING_OFFSET;
       }
       if (world_get_tile(world, xmax, y) == TILE_SOLID) {
-        curr->x_hit = 1;
+        curr->x_hit = HIT_RIGHT;
         curr->last_x_hit_frame = frame;
         dx = 0;
         ent->x = xmin - SMOOTHING_OFFSET;
       }
     }
-    if (curr->y_hit) {
-      curr->dy = 0;
-      curr->dx *= FRICTION;
-      dy *= FRICTION;
-    }
-    if (curr->x_hit) {
-      dx *= FRICTION;
-      curr->dx = 0;
-    } else {
-      curr->dx *= AIR_RESISTANCE;
-    }
+    if (curr->y_hit) { curr->dy = 0; }
+    if (curr->x_hit) { curr->dx = 0; }
     ent->x += dx;
     ent->y += dy;
 
+    if (curr->y_hit) {
+      curr->dx *= FRICTION;
+    } else {
+      curr->dx *= AIR_RESISTANCE;
+    }
     //Move to next
     curr = curr->next;
   }

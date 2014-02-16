@@ -4,6 +4,11 @@
 struct entity;
 struct world;
 
+#define HIT_TOP 1
+#define HIT_BOTTOM 2
+#define HIT_LEFT 1
+#define HIT_RIGHT 2
+
 typedef struct phys_object {
   struct phys_object * next, * prev;
   struct entity * ent;

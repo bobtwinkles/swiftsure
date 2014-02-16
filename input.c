@@ -13,6 +13,11 @@
 #define JUMP_BUTTON 2
 #define NORM_ATTACK_BUTTON 3
 
+#define DI_DESIRED_VELOCITY 40
+
+#define DI_LEFT 0
+#define DI_RIGHT 1
+
 typedef struct joystick_status {
   SDL_Joystick * joystick;
   int x_deflection;
@@ -25,6 +30,7 @@ static joystick_status_t joysticks[MAX_PLAYER];
 
 static int translate_button(int joybutton);
 static void jump_player(int index);
+static void di_player(int index, int direction);
 
 int input_init(void) {
   int i;
@@ -63,8 +69,8 @@ void handle_events(void) {
       case SDL_KEYDOWN:
         switch(event.key.keysym.sym) {
           case SDLK_ESCAPE: exit(0); break;
-          case SDLK_a: players[0]->dx = -32; break;
-          case SDLK_d: players[0]->dx = 32; break;
+          case SDLK_a: di_player(0, DI_LEFT); break;
+          case SDLK_d: di_player(0, DI_RIGHT); break;
           case SDLK_w:
             jump_player(0);
             break;
@@ -96,9 +102,9 @@ void handle_events(void) {
   for (i = 0; i < MAX_PLAYER; ++i) {
     if (players[i] != NULL) {
       if (joysticks[i].x_deflection > 10000) {
-        players[i]->dx = 32;
+        di_player(i, DI_RIGHT);
       } else if (joysticks[i].x_deflection < -10000) {
-        players[i]->dx = -32;
+        di_player(i, DI_LEFT);
       }
     }
   }
@@ -106,6 +112,20 @@ void handle_events(void) {
 
 static int translate_button (int joybutton) {
   return joybutton - 12;
+}
+
+static void di_player(int index, int direction) {
+  if (direction == DI_LEFT) {
+    if (players[index]->dx > -DI_DESIRED_VELOCITY) {
+      float diff = -DI_DESIRED_VELOCITY - players[index]->dx;
+      players[index]->dx += diff / 8;
+    }
+  } else {
+    if (players[index]->dx < DI_DESIRED_VELOCITY) {
+      float diff = DI_DESIRED_VELOCITY - players[index]->dx;
+      players[index]->dx += diff / 8;
+    }
+  }
 }
 
 static void jump_player(int index) {

@@ -48,6 +48,8 @@ int main(int argc, const char ** argv) {
   player.air_jumps_used = 0;
 
   player_phys = physics_add_entity(&player);
+  player_phys->dx = -100;
+  player_phys->dy = 100;
   input_set_player(0, player_phys);
 
   swiftsure_log(INFO, "Startin engines\n");
