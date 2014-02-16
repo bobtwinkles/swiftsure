@@ -46,6 +46,12 @@ int input_init(void) {
     return -1;
   }
 
+  if (MAX_PLAYERS - 1 > max) {
+    swiftsure_log(DEBUG, "Not enough input devices: plug in more gamepads!\n");
+    swiftsure_log(DEBUG, "Want: %d have %d\n", MAX_PLAYERS - 1, max);
+    return -1;
+  }
+
   if (max > MAX_PLAYERS) { max = MAX_PLAYERS; }
   else if (max == MAX_PLAYERS - 1) {p1_should_kbd = 1; }
   if (p1_should_kbd) {
