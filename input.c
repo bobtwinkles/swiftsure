@@ -61,8 +61,9 @@ int input_init(void) {
     const char * err;
     joysticks[i].joystick = SDL_JoystickOpen(i);
 
-    if (joysticks[i].joystick == NULL) {
-      swiftsure_log(DEBUG, "Couldn't init joystick\n");
+    err = SDL_GetError();
+    if (joysticks[i].joystick == NULL || *err != '\00') {
+      swiftsure_log(DEBUG, "Couldn't init joystick, error %s\n", err);
       return -1;
     }
   }
@@ -98,7 +99,7 @@ void handle_events(void) {
       case SDL_JOYBUTTONDOWN:
       case SDL_JOYBUTTONUP:
         joysticks[event.jbutton.which].button_status[translate_button(event.jbutton.button)] = event.jbutton.state;
-        if (event.jbutton.state == SDL_PRESSED) {
+        if (event.jbutton.state == SDL_PRESSED && event.jbutton.button >= 12 && event.jbutton.button <= 15) {
           switch (translate_button(event.jbutton.button)) {
             case JUMP_BUTTON:
               jump_player(event.jbutton.which + p1_should_kbd);
