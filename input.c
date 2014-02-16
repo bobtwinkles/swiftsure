@@ -6,7 +6,7 @@
 #include "log.h"
 #include "physics.h"
 #include "entity.h"
-#include "globals.h"
+#include "gamedefs.h"
 
 #define FINAL_BUTTON 0
 #define SP_ATTACK_BUTTON 1
@@ -25,8 +25,10 @@ typedef struct joystick_status {
   char button_status[4];
 } joystick_status_t;
 
-static phys_object_t *players[MAX_PLAYER];
-static joystick_status_t joysticks[MAX_PLAYER];
+static phys_object_t *players[MAX_PLAYERS];
+static joystick_status_t joysticks[MAX_PLAYERS];
+static Uint8 * keyboard_state;
+static char p1_should_kbd;
 
 static int translate_button(int joybutton);
 static void jump_player(int index);
@@ -44,14 +46,21 @@ int input_init(void) {
     return -1;
   }
 
-  if (max > MAX_PLAYER) { max = MAX_PLAYER; }
-  for (i = 0; i < max; ++i) {
+  if (max > MAX_PLAYERS) { max = MAX_PLAYERS; }
+  else if (max == MAX_PLAYERS - 1) {p1_should_kbd = 1; }
+  if (p1_should_kbd) {
+    swiftsure_log(DEBUG, "Player 1 needs to use the keyboard\n");
+  }
+  for (i = 0; i < SDL_NumJoysticks(); ++i) {
+    const char * err;
     joysticks[i].joystick = SDL_JoystickOpen(i);
+
     if (joysticks[i].joystick == NULL) {
       swiftsure_log(DEBUG, "Couldn't init joystick\n");
       return -1;
     }
   }
+  keyboard_state = SDL_GetKeyboardState(NULL);
   return 0;
 }
 
@@ -69,11 +78,6 @@ void handle_events(void) {
       case SDL_KEYDOWN:
         switch(event.key.keysym.sym) {
           case SDLK_ESCAPE: exit(0); break;
-          case SDLK_a: di_player(0, DI_LEFT); break;
-          case SDLK_d: di_player(0, DI_RIGHT); break;
-          case SDLK_w:
-            jump_player(0);
-            break;
         }
         break;
       case SDL_JOYAXISMOTION:
@@ -91,7 +95,7 @@ void handle_events(void) {
         if (event.jbutton.state == SDL_PRESSED) {
           switch (translate_button(event.jbutton.button)) {
             case JUMP_BUTTON:
-              jump_player(0);
+              jump_player(event.jbutton.which + p1_should_kbd);
               break;
           }
         }
@@ -99,11 +103,23 @@ void handle_events(void) {
     }
   }
   //DI
-  for (i = 0; i < MAX_PLAYER; ++i) {
+  if (p1_should_kbd) {
+    if (keyboard_state[SDL_SCANCODE_W]) {
+      jump_player(0);
+    }
+    if (keyboard_state[SDL_SCANCODE_A]) {
+      di_player(0, DI_LEFT);
+    }
+    if (keyboard_state[SDL_SCANCODE_D]) {
+      di_player(0, DI_RIGHT);
+    }
+  }
+  for (i = p1_should_kbd; i < MAX_PLAYERS; ++i) {
     if (players[i] != NULL) {
-      if (joysticks[i].x_deflection > 10000) {
+      joystick_status_t status = joysticks[i - p1_should_kbd];
+      if (status.x_deflection > 10000) {
         di_player(i, DI_RIGHT);
-      } else if (joysticks[i].x_deflection < -10000) {
+      } else if (status.x_deflection < -10000) {
         di_player(i, DI_LEFT);
       }
     }

@@ -3,10 +3,11 @@
 #include "entity.h"
 #include "linkedlist.h"
 #include "log.h"
-#include "globals.h"
+#include "gamedefs.h"
 #include "world.h"
 
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 static phys_object_t root = {NULL, NULL, NULL, 0, 0};
@@ -33,12 +34,6 @@ int check_collisions(world_t * world, int xmin, int xmax, int ymin, int ymax) {
   return collision_flags;
 }
 
-static float sign(float x) {
-  if (x < 0) {return -1;} else
-  if (x > 0) {return  1;} else
-             {return  0;}
-}
-
 #define SMOOTHING_OFFSET 0.01
 #define AIR_RESISTANCE 0.99
 #define FRICTION 0.5
@@ -47,7 +42,6 @@ void physics_tick(struct world * world, double delta) {
   phys_object_t * curr;
   entity_t * ent;
   int xmin,ymin,xmax,ymax;
-  int collision_flags;
   int x, y;
   float dx, dy;
 

@@ -7,10 +7,10 @@
 #include "input.h"
 #include "rendering.h"
 #include "world.h"
-#include "log.h"
-#include "entity.h"
 #include "physics.h"
-#include "globals.h"
+#include "log.h"
+#include "game.h"
+#include "gamedefs.h"
 
 world_t world;
 
@@ -20,8 +20,7 @@ int main(int argc, const char ** argv) {
   struct timespec left = {0, 0};
   int error;
   long long elapsed;
-  entity_t player;
-  phys_object_t * player_phys;
+  float cam_center_x, cam_center_y;
 
   if (swiftsure_log_init() < 0) {
     printf("Bad times, we couldn't open our log file =(\n");
@@ -39,18 +38,7 @@ int main(int argc, const char ** argv) {
   world.height = WORLD_SIZE;
 
   world_init(&world, 1);
-
-  player.x = 100;
-  player.y = 100;
-  player.w = 1.99;
-  player.h = 3.99;
-  player.air_jumps_max = 2;
-  player.air_jumps_used = 0;
-
-  player_phys = physics_add_entity(&player);
-  player_phys->dx = -100;
-  player_phys->dy = 100;
-  input_set_player(0, player_phys);
+  game_init();
 
   swiftsure_log(INFO, "Startin engines\n");
 
@@ -60,12 +48,13 @@ int main(int argc, const char ** argv) {
   while (1) {
     gettimeofday(&start_time, NULL);
 
-    render_set_camera(-(player.x + player.w / 2.), -(player.y + player.h / 2.), 4);
+    game_get_avg_pos(&cam_center_x, &cam_center_y);
+    render_set_camera(-cam_center_x, -cam_center_y, 4);
 
     handle_events();
     render_start_frame();
     render_world(&world);
-    render_entity(&player);
+    game_render_players();
     render_end_frame();
     ++frame;
 

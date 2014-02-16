@@ -131,7 +131,7 @@ void render_entity(struct entity * ent) {
   hh = ent->h * cam_scale;
 
   glBegin(GL_QUADS);
-    glColor3f(1.f, 0.f, 0.f);
+    glColor3f(ent->r, ent->g, ent->b);
     glVertex2f(xx, yy);
     glVertex2f(xx, yy + hh);
     glVertex2f(xx + ww, yy + hh);

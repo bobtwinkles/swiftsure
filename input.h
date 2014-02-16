@@ -1,8 +1,6 @@
 #ifndef _INPUT_H_
 #define _INPUT_H_
 
-#define MAX_PLAYER 1
-
 struct phys_object;
 
 extern int input_init(void);

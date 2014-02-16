@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include "globals.h"
+#include "gamedefs.h"
 
 #define MAX_LOG_SIZE 32
 
