@@ -6,6 +6,7 @@
 #include "rendering.h"
 #include "input.h"
 #include "world.h"
+#include "action.h"
 
 #include <stdlib.h>
 
@@ -28,7 +29,7 @@ void game_init(void) {
     players[i].air_jumps_max = 2;
     players[i].air_jumps_used = 0;
     objects[i] = physics_add_entity(&players[i]);
-    input_set_player(i, objects[i]);
+    action_set_player(i, objects[i]);
 
     curr += offset;
   }

@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include "action.h"
 #include "input.h"
 #include "rendering.h"
 #include "world.h"
@@ -33,6 +34,7 @@ int main(int argc, const char ** argv) {
     printf("Bad times, we couldn't initialize the input subsystem\n");
     return -1;
   }
+  action_init();
 
   world.width = WORLD_SIZE;
   world.height = WORLD_SIZE;

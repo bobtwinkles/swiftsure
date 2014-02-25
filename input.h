@@ -5,7 +5,7 @@ struct phys_object;
 
 extern int input_init(void);
 
-extern void input_set_player(int idx, struct phys_object * object);
+extern void input_scan_joysticks(void);
 
 extern void handle_events(void);
 
