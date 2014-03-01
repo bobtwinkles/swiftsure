@@ -54,6 +54,7 @@ int main(int argc, const char ** argv) {
     render_set_camera(-cam_center_x, -cam_center_y, 4);
 
     handle_events();
+    action_perform();
     render_start_frame();
     render_world(&world);
     game_render_players();

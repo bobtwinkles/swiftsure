@@ -1,6 +1,6 @@
 BLDDIR="./build"
 SRCDIR="./"
-CFLAGS=-Wall -g $(shell sdl2-config --cflags --libs)
+CFLAGS=-Wpedantic -Wall -g $(shell sdl2-config --cflags --libs)
 LFLAGS=-lm -lGL -lGLEW
 CC=clang
 

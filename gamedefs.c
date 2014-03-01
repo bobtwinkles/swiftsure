@@ -1,3 +1,3 @@
 #include "gamedefs.h"
 
-int frame;
+frame_t frame;
